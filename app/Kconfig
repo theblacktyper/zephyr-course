@@ -9,6 +9,8 @@ choice
     default BLINK_SLEEP_1000MS
 config BLINK_SLEEP_250MS
     bool "250ms (fast)"
+config BLINK_SLEEP_500MS
+    bool "500ms (medium-fast)"
 config BLINK_SLEEP_1000MS
     bool "1s (medium)"
 config BLINK_SLEEP_2000MS
@@ -44,9 +46,15 @@ endif # ADV_LED_SETTINGS
 
 endif # LED_SUBSYSTEM
 
+config APP_HEARTBEAT_PERIOD_MS
+    int "app-led heartbeat period (ms)"
+    range 100 2000
+    default 500
+
 config BLINK_SPEED_TIME_MSEC
     int # <-- No prompt = hidden!
     default 250 if BLINK_SLEEP_250MS
+    default 500 if BLINK_SLEEP_500MS
     default 1000 if BLINK_SLEEP_1000MS
     default 2000 if BLINK_SLEEP_2000MS
     default 0
