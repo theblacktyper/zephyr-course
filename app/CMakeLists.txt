@@ -5,6 +5,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(BOARD_FLASH_RUNNER jlink)
 set(BOARD_DEBUG_RUNNER jlink)
 
+list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}) 
+
 find_package(Zephyr REQUIRED)
 project(my_zephyr_app)
 
