@@ -1,0 +1,9 @@
+board:
+  name: my_custom_board
+  full_name: My Custom Board From Scratch
+  vendor: theblacktyper
+  socs:
+  - name: mcxn947
+    variants:
+    - name: qspi
+      cpucluster: 'cpu0'

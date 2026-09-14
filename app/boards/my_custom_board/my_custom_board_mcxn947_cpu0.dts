@@ -1,0 +1,109 @@
+/dts-v1/;
+
+#include <nxp/nxp_mcxn94x.dtsi>
+#include <nxp/mcx/MCXN947VDF-pinctrl.h>
+
+/ {
+    model = "My custom board";
+    compatible = "theblacktyper", "my_custom_board";
+
+    aliases{
+	led0 = &red_led;
+	led1 = &green_led;
+	led2 = &blue_led;
+    };
+
+    chosen {
+	zephyr,sram = &sram0;
+	zephyr,flash = &flash;
+	zephyr,flash-controller = &fmu;
+	zephyr,code-partition = &slot0_partition;
+	zephyr,console = &flexcomm4_lpuart4;
+    };
+
+    leds {
+	compatible = "gpio-leds";
+	green_led: led_1 {
+		gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;
+		label = "Green LED";
+	};
+	blue_led: led_2 {
+		gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+		label = "Blue LED";
+	};
+	red_led: led_3 {
+		gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+		label = "Red LED";
+	};
+    };
+};
+
+&sram0 {
+	compatible = "mmio-sram";
+	reg = <0x20000000 DT_SIZE_K(320)>;
+};
+
+&enet {
+	status = "disabled";
+};
+
+&systick {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&flash {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*
+		 * Partition sizes must be aligned
+		 * to the flash memory sector size of 8KB.
+		 */
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(80)>;
+		};
+		slot0_partition: partition@14000 {
+			label = "image-0";
+			reg = <0x00014000 DT_SIZE_K(984)>;
+		};
+		slot1_partition: partition@10A000 {
+			label = "image-1";
+			reg = <0x0010A000 DT_SIZE_K(984)>;
+		};
+		/* storage_partition is placed in WINBOND flash memory*/
+	};
+};
+
+&pinctrl {
+	pinmux_flexcomm4_lpuart: pinmux_flexcomm4_lpuart {
+		group0 {
+			pinmux = <FC4_P0_PIO1_8>,
+				<FC4_P1_PIO1_9>;
+			slew-rate = "fast";
+			drive-strength = "low";
+			input-enable;
+		};
+	};
+};
+
+&flexcomm4 {
+	status = "okay";
+};
+
+&flexcomm4_lpuart4 {
+	current-speed = <115200>;
+	pinctrl-0 = <&pinmux_flexcomm4_lpuart>;
+	pinctrl-names = "default";
+	status = "okay";
+};
