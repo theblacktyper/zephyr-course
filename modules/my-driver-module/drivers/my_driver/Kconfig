@@ -1,0 +1,8 @@
+menuconfig MY_DRIVER
+    bool "My Custom Driver"
+    default y
+    depends on DT_HAS_MY_DRIVER_ENABLED # Only if HW is present in the DT
+    depends on SENSOR
+    select GPIO # Auto-pulls dependencies
+    help
+        sensor_sample_fetch sets led on, sensor_channel_get sets led off.
