@@ -4,6 +4,7 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <my_driver/my_driver.h>
 
 LOG_MODULE_REGISTER(my_driver, CONFIG_SENSOR_LOG_LEVEL);
 
@@ -13,6 +14,7 @@ struct my_driver_config {
 
 struct my_driver_data {
 	bool is_led_on; /* runtime state */
+    unsigned int led_on_ctr; /* for task 2: keeps track of number of times the led has turned on since boot time */
 };
 
 /* sensor_sample_fetch() -> turn LED on */
@@ -32,6 +34,8 @@ static int my_driver_sample_fetch(const struct device *dev, enum sensor_channel 
 
 	data->is_led_on = true;
 	LOG_DBG("LED on");
+
+    data->led_on_ctr += 1;
 
 	return 0;
 }
@@ -61,6 +65,30 @@ static int my_driver_channel_get(const struct device *dev, enum sensor_channel c
 	return 0;
 }
 
+/* Extension API (declared in my_driver/my_driver.h) */
+int my_driver_get_led_on_ctr(const struct device *dev, unsigned int *ctr)
+{
+	const struct my_driver_data *data = dev->data;
+
+	if (ctr == NULL) {
+		return -EINVAL;
+	}
+
+	*ctr = data->led_on_ctr;
+
+	return 0;
+}
+
+int my_driver_reset_led_on_ctr(const struct device *dev)
+{
+	struct my_driver_data *data = dev->data;
+
+	data->led_on_ctr = 0;
+	LOG_DBG("LED on-counter reset");
+
+	return 0;
+}
+
 static DEVICE_API(sensor, my_driver_api) = {
 	.sample_fetch = my_driver_sample_fetch,
 	.channel_get = my_driver_channel_get,
@@ -77,6 +105,8 @@ static int my_driver_init(const struct device *dev)
 	}
 
 	data->is_led_on = false;
+
+    data->led_on_ctr = 0;
 
 	return gpio_pin_configure_dt(&cfg->led, GPIO_OUTPUT_INACTIVE);
 }
