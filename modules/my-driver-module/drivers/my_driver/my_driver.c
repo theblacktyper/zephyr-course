@@ -111,15 +111,15 @@ static int my_driver_init(const struct device *dev)
 	return gpio_pin_configure_dt(&cfg->led, GPIO_OUTPUT_INACTIVE);
 }
 
-#define MY_DRIVER_DEFINE(inst)                                   \
-	static struct my_driver_data data_##inst;                    \
-	static const struct my_driver_config cfg_##inst = {          \
-		.led = GPIO_DT_SPEC_INST_GET(inst, led_gpios),           \
-	};                                                           \
-	DEVICE_DT_INST_DEFINE(inst,                                  \
-			      my_driver_init, NULL,                          \
-			      &data_##inst, &cfg_##inst,                     \
-			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,      \
+#define MY_DRIVER_DEFINE(inst)                                   		\
+	static struct my_driver_data data_##inst;                    		\
+	static const struct my_driver_config cfg_##inst = {          		\
+		.led = GPIO_DT_SPEC_GET(DT_INST_PHANDLE(inst, led), gpios), 	\
+	};                                                           		\
+	DEVICE_DT_INST_DEFINE(inst,                                  		\
+			      my_driver_init, NULL,                          		\
+			      &data_##inst, &cfg_##inst,                     		\
+			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,      		\
 			      &my_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(MY_DRIVER_DEFINE)

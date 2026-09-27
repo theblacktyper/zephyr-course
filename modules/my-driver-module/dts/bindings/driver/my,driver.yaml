@@ -3,7 +3,7 @@ compatible: "my,driver"
 include: sensor-device.yaml
 
 properties:
-  led-gpios:
-    type: phandle-array
+  led:
+    type: phandle
     required: true
-    description: GPIO driving the LED
+    description: Board LED node to use (e.g. a child of a gpio-leds node)

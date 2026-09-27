@@ -1,7 +1,7 @@
 / {
 	my_driver0: my_driver {
 		compatible = "my,driver";
-		led-gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;   /* on-board green LED */
+		led = <&blue_led>;
 		status = "okay";
 	};
 };
