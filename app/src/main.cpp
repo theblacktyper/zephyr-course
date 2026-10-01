@@ -51,6 +51,12 @@ int main(void)
     while (1) {
         unsigned int on_counts = 0;
 
+        /* l7: once "sensor fetch/read" runs from the shell, stop auto-toggling (latched until reset) */
+        if (my_driver_is_manual_mode(dev)) {
+            k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
+            continue;
+        }
+
         /* Homework task 2: exercise custom extension API function - read & reset LED-on counter from driver */
         my_driver_get_led_on_ctr(dev, &on_counts);
         if (on_counts >= 10)
@@ -63,15 +69,20 @@ int main(void)
         }
         /* Homework task 2: exercise custom extension API function - read LED-on counter from driver */
         my_driver_get_led_on_ctr(dev, &on_counts);
-        LOG_INF("LED state: ON (%u times)", on_counts);
+        // LOG_INF("LED state: ON (%u times)", on_counts);
         k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
+
+        /* shell may have taken over during the sleep: don't touch the LED anymore */
+        if (my_driver_is_manual_mode(dev)) {
+            continue;
+        }
 
         /* get -> LED off (val reports the state it had before) */
         if (sensor_channel_get(dev, SENSOR_CHAN_ALL, &val) < 0) {
             LOG_ERR("channel_get failed");
             return 0;
         }
-        LOG_INF("LED state: OFF");
+        // LOG_INF("LED state: OFF");
         k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
     }
 #endif

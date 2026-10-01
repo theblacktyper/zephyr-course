@@ -1,7 +1,7 @@
 / {
 	my_driver0: my_driver {
 		compatible = "my,driver";
-		led = <&blue_led>;
+		led = <&red_led>;
 		status = "okay";
 	};
 };

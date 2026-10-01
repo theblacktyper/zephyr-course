@@ -15,6 +15,7 @@ struct my_driver_config {
 struct my_driver_data {
 	bool is_led_on; /* runtime state */
     unsigned int led_on_ctr; /* for task 2: keeps track of number of times the led has turned on since boot time */
+	atomic_t manual_mode; /* set (latched) once the shell takes control; shared across threads */
 };
 
 /* sensor_sample_fetch() -> turn LED on */
@@ -89,6 +90,21 @@ int my_driver_reset_led_on_ctr(const struct device *dev)
 	return 0;
 }
 
+bool my_driver_set_manual_mode(const struct device *dev)
+{
+	struct my_driver_data *data = dev->data;
+
+	/* atomic_set() returns the previous value */
+	return atomic_set(&data->manual_mode, 1) == 0;
+}
+
+bool my_driver_is_manual_mode(const struct device *dev)
+{
+	struct my_driver_data *data = dev->data;
+
+	return atomic_get(&data->manual_mode) != 0;
+}
+
 static DEVICE_API(sensor, my_driver_api) = {
 	.sample_fetch = my_driver_sample_fetch,
 	.channel_get = my_driver_channel_get,
@@ -107,6 +123,7 @@ static int my_driver_init(const struct device *dev)
 	data->is_led_on = false;
 
     data->led_on_ctr = 0;
+	atomic_set(&data->manual_mode, 0);
 
 	return gpio_pin_configure_dt(&cfg->led, GPIO_OUTPUT_INACTIVE);
 }

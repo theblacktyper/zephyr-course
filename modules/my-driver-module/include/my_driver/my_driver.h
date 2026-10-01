@@ -26,6 +26,25 @@ int my_driver_get_led_on_ctr(const struct device *dev, unsigned int *ctr);
  */
 int my_driver_reset_led_on_ctr(const struct device *dev);
 
+/**
+ * @brief Put the device under manual control (e.g. from the shell).
+ *
+ * Latched: once set, it stays set until reset/power cycle. Apps that
+ * auto-drive the LED should stop when my_driver_is_manual_mode() is true.
+ *
+ * @param dev  my_driver device
+ *
+ * @return true if this call switched to manual mode, false if it was already set.
+ */
+bool my_driver_set_manual_mode(const struct device *dev);
+
+/**
+ * @brief Check whether the device is under manual control.
+ *
+ * @param dev  my_driver device
+ */
+bool my_driver_is_manual_mode(const struct device *dev);
+
 #ifdef __cplusplus
 }
 #endif
