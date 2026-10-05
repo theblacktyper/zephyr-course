@@ -17,33 +17,18 @@ extern "C" {
  */
 int my_driver_get_led_on_ctr(const struct device *dev, unsigned int *ctr);
 
-/**
- * @brief Reset the LED-on counter to 0.
- *
- * @param dev  my_driver device
- *
- * @return 0 on success.
- */
-int my_driver_reset_led_on_ctr(const struct device *dev);
+/** Highest value accepted by my_driver_set_led_on_ctr(). */
+#define MY_DRIVER_LED_ON_CTR_MAX 9U
 
 /**
- * @brief Put the device under manual control (e.g. from the shell).
+ * @brief Set the LED-on counter (0 resets it).
  *
- * Latched: once set, it stays set until reset/power cycle. Apps that
- * auto-drive the LED should stop when my_driver_is_manual_mode() is true.
+ * @param dev    my_driver device
+ * @param value  New counter value, 0..MY_DRIVER_LED_ON_CTR_MAX.
  *
- * @param dev  my_driver device
- *
- * @return true if this call switched to manual mode, false if it was already set.
+ * @return 0 on success, -EINVAL if value is out of range.
  */
-bool my_driver_set_manual_mode(const struct device *dev);
-
-/**
- * @brief Check whether the device is under manual control.
- *
- * @param dev  my_driver device
- */
-bool my_driver_is_manual_mode(const struct device *dev);
+int my_driver_set_led_on_ctr(const struct device *dev, unsigned int value);
 
 #ifdef __cplusplus
 }
